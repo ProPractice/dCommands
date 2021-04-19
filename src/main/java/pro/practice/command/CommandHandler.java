@@ -19,7 +19,7 @@ public class CommandHandler extends ListenerAdapter {
 
     public CommandHandler(JDABuilder builder, String prefix) {
         builder.addEventListeners(this);
-       this.prefix = prefix;
+        this.prefix = prefix;
     }
 
     public CommandHandler(JDA jda, String prefix) {
@@ -30,7 +30,7 @@ public class CommandHandler extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String message = event.getMessage().getContentRaw();
-        if(message.startsWith("?")) {
+        if(message.startsWith(prefix)) {
             handleCommand(event, message.split(" "));
         }
     }
@@ -46,26 +46,26 @@ public class CommandHandler extends ListenerAdapter {
             } catch (IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
-            if(command.log()) System.out.println(event.getAuthor().getAsTag() + " has issued command: " + event.getMessage().getContentRaw());
+            if(command.log()) System.out.println(event.getAuthor().getAsTag() + " executed command: " + event.getMessage().getContentRaw());
         }
     }
 
     public void registerCommands(Object... objs) {
         for (Object obj : objs) {
-            for (Method m : obj.getClass().getMethods()) {
-                if (m.getAnnotation(Command.class) != null) {
-                    Command command = m.getAnnotation(Command.class);
-                    registerCommand(command.name(), m, obj);
+            for (Method method : obj.getClass().getMethods()) {
+                if (method.getAnnotation(Command.class) != null) {
+                    Command command = method.getAnnotation(Command.class);
+                    registerCommand(command.name(), method, obj);
                     for (String alias : command.aliases()) {
-                        registerCommand(alias, m, obj);
+                        registerCommand(alias, method, obj);
                     }
                 }
             }
         }
     }
 
-    private void registerCommand(String label, Method m, Object obj) {
-        commandMap.put(prefix + label.toLowerCase(), new AbstractMap.SimpleEntry<>(m, obj));
+    private void registerCommand(String label, Method method, Object obj) {
+        commandMap.put(prefix + label.toLowerCase(), new AbstractMap.SimpleEntry<>(method, obj));
     }
 
 }

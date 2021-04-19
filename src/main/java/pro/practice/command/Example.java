@@ -16,8 +16,8 @@ public class Example {
     }
 
     @Command(name = "example", aliases = { "exp" }, log = false, memberOnly = true)
-    public void exampleCommand(MessageReceivedEvent e) {
-        e.getChannel().sendMessage("This is an example.").queue();
+    public void exampleCommand(MessageReceivedEvent event) {
+        event.getChannel().sendMessage("This is an example.").queue();
     }
 
 }
